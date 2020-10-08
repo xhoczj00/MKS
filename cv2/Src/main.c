@@ -18,7 +18,10 @@
  */
 #include  "stm32f0xx.h"
 #define LED_TIME_BLINK 300
-static volatile Tick;
+#define BUTTON_DEBOUNCE 40
+#define LED_TIME_SHORT 100
+#define LED_TIME_LONG 1000
+static volatile uint32_t Tick;
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
@@ -49,9 +52,40 @@ void blikac(void)
 	}
 }
 
+void tlacitka(void)
+{
+	static uint32_t debounce1;
+	static uint32_t off_time;
+
+	if (Tick > debounce1 + BUTTON_DEBOUNCE)
+	{
+		 static uint32_t old_s2;
+		 static uint32_t old_s1;
+		 uint32_t new_s2 = GPIOC->IDR & (1<<0);
+		 if (old_s2 && !new_s2)
+		 {
+			 off_time = Tick + LED_TIME_SHORT;
+			 GPIOB->BSRR = (1<<0);
+		 }
+		 old_s2 = new_s2;
+
+		 uint32_t new_s1 = GPIOC->IDR & (1<<1);
+		 if (old_s1 && !new_s1)
+		 {
+			 off_time = Tick + LED_TIME_LONG;
+			 GPIOB->BSRR = (1<<0);
+		 }
+		 old_s1 = new_s1;
+	}
+
+	if (Tick > off_time)
+	{
+		GPIOB->BRR = (1<<0);
+	}
+}
 int main(void)
 {
-	 RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOPBEN | RCC__AHBENR_GPIOPCEN; // enable
+	 RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOBEN | RCC_AHBENR_GPIOCEN; // enable
 	 GPIOA->MODER |= GPIO_MODER_MODER4_0; // LED1 = PA4, output
 	 GPIOB->MODER |= GPIO_MODER_MODER0_0; // LED2 = PB0, output
 	 GPIOC->PUPDR |= GPIO_PUPDR_PUPDR0_0; // S2 = PC0, pullup
@@ -72,6 +106,7 @@ int main(void)
 	for(;;)
 	{
 		blikac();
+		tlacitka();
 	}
 	;
 }
