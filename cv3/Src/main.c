@@ -27,10 +27,16 @@ int main(void)
 {
 	sct_init();
 	sct_led(0x7A5C36DE);
+	for (volatile uint32_t j = 0;j<30000000;j++){}
+
 	/* Blikani v morseovce */
 	for(;;)
 	{
-
+		for (uint16_t i = 0;i<30000000;i+=111)
+		{
+			sct_value(i);
+			for (volatile uint32_t j = 0;j<500000;j++){}
+		}
 	}
 	;
 }

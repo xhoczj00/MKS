@@ -1,4 +1,4 @@
-Src/main.o: ../Src/main.c \
+Src/sct.o: ../Src/sct.c \
  D:/Skola/ING/MKS/PC/MKS/cv3/CMSIS/Device/ST/STM32F0xx/Include/stm32f0xx.h \
  D:/Skola/ING/MKS/PC/MKS/cv3/CMSIS/Device/ST/STM32F0xx/Include/stm32f030x8.h \
  D:/Skola/ING/MKS/PC/MKS/cv3/CMSIS/Include/core_cm0.h \
