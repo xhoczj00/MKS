@@ -109,7 +109,7 @@ int main(void)
 	  static uint32_t delay;
 	  static uint32_t rozdil;
 	  static uint32_t mezicas;
-	  sct_led(time); // vypisovani na 7-segment
+	  sct_value(time); // vypisovani na 7-segment
 
 	  if(HAL_GPIO_ReadPin(S1_GPIO_Port, S1_Pin)==0)
 	  {
@@ -122,9 +122,9 @@ int main(void)
 		  time = mezicas;	// pokud je stav ZOBRAZIT, dochazi k prekreslovani displeje kazdym pruchodem while
 	  }
 	  if (state_S1 == SKRYT )
-	 	  {
-	 		  time = time; // pokud je stav SKRYT, zobrazovani se pozastavi
-	 	  }
+	  {
+		  time = time; // pokud je stav SKRYT, zobrazovani se pozastavi
+	  }
 
 	  if (state_S2 == RESET)
 	  {
@@ -133,7 +133,7 @@ int main(void)
 
 	  if(state_S2 == START)
 	  {
-		  delay = HAL_GetTick();	//zjisteni aktualniho ticku
+		  delay = HAL_GetTick()/100;	//zjisteni aktualniho ticku
 		  mezicas = delay - rozdil; // rozdil aktualniho ticku od sepnuti tlacitka S2
 	  }
 	  if(state_S2 == STOP)
@@ -141,22 +141,22 @@ int main(void)
 		  // pokud je je nastaven stav STOP, nedochazi k vypoctu rozdilu, a tak se na displeji zobrazuje posledni hodnota
 	  }
 	  if(HAL_GPIO_ReadPin(S2_GPIO_Port, S2_Pin)==0)	// zmena stavu pri spinani S2
-	      {
-	      	if (state_S2 == RESET)
-	      	{
-	      		state_S2 = START;
-	      		rozdil = HAL_GetTick(); // pocatecni tick pri sepnuti od ktereho se vypocitava aktualni
-	      	}
-	      	else if (state_S2 == START)
-	      	{
-	      		state_S2 = STOP;
+	  {
+		if (state_S2 == RESET)
+		{
+			state_S2 = START;
+			rozdil = HAL_GetTick()/100; // pocatecni tick pri sepnuti od ktereho se vypocitava aktualni
+		}
+		else if (state_S2 == START)
+		{
+			state_S2 = STOP;
 
-	      	}
-	      	else if (state_S2 == STOP)
-	      	{
-	      		state_S2 = RESET;
-	      	}
-	      }
+		}
+		else if (state_S2 == STOP)
+		{
+			state_S2 = RESET;
+		}
+	  }
 
   }
   /* USER CODE END 3 */
